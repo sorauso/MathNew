@@ -101,7 +101,6 @@ void Player::Update()
 	{
 		vel_.x = vel_.x + dir_.x * ACC * GetDeltaTime();
 		vel_.y = vel_.y + dir_.y * ACC * GetDeltaTime();
-		new Bullet(pos_, vel_, GetColor(255,255,255),5.0f,10);
 	}
 
 	pos_.x = pos_.x + vel_.x * GetDeltaTime();
@@ -113,4 +112,9 @@ void Player::Update()
 	if (pos_.x > WIN_WIDTH) { pos_.x = 0; }
 	if (pos_.y < 0) { pos_.y = WIN_HEIGHT; }
 	if (pos_.y > WIN_HEIGHT) { pos_.y = 0; }
+}
+
+Vector2D Player::GetVelocity()
+{
+	return Math2D::Sub(vertex_[0], pos_);
 }

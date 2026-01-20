@@ -15,4 +15,5 @@ public:
     ~Player();
     void Draw() override;
     void Update() override;
+    Vector2D GetVelocity();
 };

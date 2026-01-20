@@ -10,11 +10,21 @@ Bullet::Bullet(const Vector2D& pos, const Vector2D& vel, unsigned int color, flo
 void Bullet::Update()
 {
 	float dt = GetDeltaTime();
+	//pos_.x = pos_.x + vel_.x * dt;
+	//pos_.y = pos_.y + vel_.y * dt;
 	pos_ = Math2D::Add(pos_, Math2D::Mul(vel_, dt));
+
+	if (pos_.x < 0) { pos_.x = WIN_WIDTH; }
+	if (pos_.x > WIN_WIDTH) { pos_.x = 0; }
+	if (pos_.y < 0) { pos_.y = WIN_HEIGHT; }
+	if (pos_.y > WIN_HEIGHT) { pos_.y = 0; }
+
+	life_ = life_ - dt;
 }
 
 void Bullet::Draw()
 {
 	Vector2D sPos = Math2D::World2Screen(pos_);
-	DrawCircleAA(sPos.x, sPos.y, radius_, color_, true);
+	DrawCircle((int)sPos.x, (int)sPos.y, radius_, color_, true);
+	//DrawCircle(pos_.x, pos_.y, radius_, color_, true);
 }
