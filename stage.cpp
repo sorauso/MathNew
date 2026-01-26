@@ -15,9 +15,12 @@ namespace
 	const float START_RADIUS = 30.0f;
 	const float START_OMEGA = 2.0f;
 	const unsigned int START_COLOR = 0xfffffffff;
+	const unsigned int ENEMY_MAX = 10;
+
 	Player* player = nullptr;
 
 	std::vector<Bullet*> bullet;
+	std::vector<Enemy*>enemys;
 }
 
 Stage::Stage()
@@ -32,7 +35,11 @@ void Stage::Init()
 {
 	player = new Player(START_POS, START_VEL, START_COLOR, START_DIR, START_OMEGA, START_RADIUS);
 
-	enemy_ = new Enemy(8);
+	for (int i = 0;i < ENEMY_MAX;i++)
+	{
+		Enemy* e = new Enemy(8);
+		enemys.push_back(e);
+	}
 }
 
 void Stage::Update()
@@ -53,7 +60,7 @@ void Stage::Update()
 	{
 		Vector2D pos = Math2D::Add(player->GetPos(),player->GetVelocity());
 		Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
-		Bullet* b = new Bullet(pos, vel, GetColor(255, 255, 255), 5.0f, 10.0f);
+		Bullet* b = new Bullet(pos, vel, GetColor(255, 255, 255), 1.0f, 0.5f);
 		bullet.push_back(b);
 	}
 	if (!bullet.empty())
@@ -63,12 +70,44 @@ void Stage::Update()
 			obj->Update();
 		}
 	}
-	enemy_->Update();
+	if (!enemys.empty())
+	{
+		for (auto& eobj : enemys)
+		{
+			eobj->Update();
+			Vector2D Epos = eobj->GetPos();
+			float Eradiuse = eobj->GetRadius();
+			if (!bullet.empty())
+			{
+				for (auto& bobj : bullet)
+				{
+					Vector2D Bpos = bobj->GetPos();
+					float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
+					if (Dist < Eradiuse)
+					{
+						eobj->Kill();
+						bobj->Kill();
+					}
+				}
+			}
+		}
+	}
+
 	player->Update();
 }
 
 void Stage::Draw()
 {
+	if (!enemys.empty())
+	{
+		for (auto& obj : enemys)
+		{
+			if (obj->IsAlive())
+			{
+				obj->Draw();
+			}
+		}
+	}
 	if (!bullet.empty())
 	{
 		for (auto& obj : bullet)
@@ -77,7 +116,6 @@ void Stage::Draw()
 		}
 	}
 	player->Draw();
-	enemy_->Draw();
 	Vector2D Ppos = player->GetPos();
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "%lf : %lf", Ppos.x,Ppos.y);
 }
@@ -86,8 +124,14 @@ void Stage::Release()
 {
 	if(player != nullptr)
 		delete player;
-	if (enemy_ != nullptr)
-		delete enemy_;
+	if (!enemys.empty())
+	{
+		for (auto& obj : enemys)
+		{
+			if (obj != nullptr)
+				delete obj;
+		}
+	}
 }
 
 void Stage::DeleteBullet()

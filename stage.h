@@ -13,8 +13,8 @@ public:
 	void Draw();
 	void Release();
 private:
-	Player* palyer_;
-	Enemy* enemy_;
+	/*Player* palyer_;
+	Enemy* enemy_;*/
 	void DeleteBullet();
 	void ShootBullet();
 };
