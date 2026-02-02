@@ -5,6 +5,12 @@
 namespace
 {
 	const int SEGMENT_MAX = 8;
+	const float MIN_RADIUS = 20.0f;
+	const float MAX_OMEGA = 2.0f;
+
+	const float SMALL_RADIUS_MAX = 40.0f;
+	const float MEDIUM_RADIUS_MAX = 60.0f;
+	const float LARG_RADIUS_MAX = 80.0f;
 }
 
 Enemy::Enemy(int segment)
@@ -17,10 +23,44 @@ Enemy::Enemy(int segment)
 	{
 		segment_ = SEGMENT_MAX;
 	}
-	radius_ = (float)(GetRand(50) + 25.0f);
+	radius_ = (float)(GetRand(50) + MIN_RADIUS);
+
+	size_ = CheckSize();
+
 	vertex_.resize(segment_);
 	angle_ = 0.0f;
 	omega_ = ((float)GetRand(20) + 1)/10;
+	MakeShape();
+}
+
+Enemy::Enemy(Size size, int segment)
+	:Bace(), segment_(segment), isAlive_(true),size_(size)
+{
+	pos_ = { (float)GetRand(WIN_WIDTH - 1),(float)GetRand(WIN_HEIGHT - 1) };
+	vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+	color_ = GetColor(255, 255, 255);
+	if (segment_ < SEGMENT_MAX)
+	{
+		segment_ = SEGMENT_MAX;
+	}
+	radius_ = RandomRadius(size_);
+	vertex_.resize(segment_);
+	angle_ = 0.0f;
+	omega_ = ((float)GetRand(20) + 1) / 10;
+	MakeShape();
+}
+
+Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
+	:Bace(pos,vel,0xffffff), segment_(segment), isAlive_(true),size_(size)
+{
+	if (segment_ < SEGMENT_MAX)
+	{
+		segment_ = SEGMENT_MAX;
+	}
+	radius_ = RandomRadius(size_);
+	vertex_.resize(segment_);
+	angle_ = 0.0f;
+	omega_ = ((float)GetRand(20) + 1) / 10;
 	MakeShape();
 }
 
@@ -52,6 +92,41 @@ void Enemy::Update()
 	if (pos_.y < 0) { pos_.y = WIN_HEIGHT; }
 	if (pos_.y > WIN_HEIGHT) { pos_.y = 0; }
 	angle_ = angle_ + omega_ * dt;
+}
+
+Enemy::Size Enemy::CheckSize() const
+{
+	if (radius_ <= SMALL_RADIUS_MAX)
+	{
+		return Size::SMALL;
+	}
+	else if (radius_ <= MEDIUM_RADIUS_MAX)
+	{
+		return Size::MEDIUM;
+	}
+	else
+	{
+		return Size::LARGE;
+	}
+}
+
+float Enemy::RandomRadius(Size size)
+{
+	switch (size)
+	{
+	case Size::SMALL:
+		return (float)(GetRand(SMALL_RADIUS_MAX - MIN_RADIUS) + MIN_RADIUS);
+		break;
+	case Size::MEDIUM:
+		return (float)(GetRand(MEDIUM_RADIUS_MAX - SMALL_RADIUS_MAX) + SMALL_RADIUS_MAX);
+		break;
+	case Size::LARGE:
+		return (float)(GetRand(LARG_RADIUS_MAX - MEDIUM_RADIUS_MAX) + MEDIUM_RADIUS_MAX);
+		break;
+	default:
+		return 1.0f;
+		break;
+	}
 }
 
 void Enemy::MakeShape()

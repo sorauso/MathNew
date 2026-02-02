@@ -37,7 +37,7 @@ void Stage::Init()
 
 	for (int i = 0;i < ENEMY_MAX;i++)
 	{
-		Enemy* e = new Enemy(8);
+		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
 		enemys.push_back(e);
 	}
 }
@@ -49,6 +49,17 @@ void Stage::Update()
 		if ((*it)->osDead() == true)
 		{
 			it = bullet.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+	for (auto it = enemys.begin(); it != enemys.end();)
+	{
+		if ((*it)->IsAlive() == false)
+		{
+			it = enemys.erase(it);
 		}
 		else
 		{
@@ -75,6 +86,12 @@ void Stage::Update()
 		for (auto& eobj : enemys)
 		{
 			eobj->Update();
+		}
+	}
+	if (!enemys.empty())
+	{
+		for (auto& eobj : enemys)
+		{
 			Vector2D Epos = eobj->GetPos();
 			float Eradiuse = eobj->GetRadius();
 			if (!bullet.empty())
@@ -85,13 +102,18 @@ void Stage::Update()
 					float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
 					if (Dist < Eradiuse)
 					{
+						Enemy::Size size = eobj->CheckSize();
+						Vector2D Evel = eobj->GetVel();
 						eobj->Kill();
 						bobj->Kill();
+						Enemy* e = new Enemy(Epos, Evel, size, 8);
+						enemys.push_back(e);
 					}
 				}
 			}
 		}
 	}
+	
 
 	player->Update();
 }
@@ -102,10 +124,7 @@ void Stage::Draw()
 	{
 		for (auto& obj : enemys)
 		{
-			if (obj->IsAlive())
-			{
-				obj->Draw();
-			}
+			obj->Draw();
 		}
 	}
 	if (!bullet.empty())
@@ -124,14 +143,6 @@ void Stage::Release()
 {
 	if(player != nullptr)
 		delete player;
-	if (!enemys.empty())
-	{
-		for (auto& obj : enemys)
-		{
-			if (obj != nullptr)
-				delete obj;
-		}
-	}
 }
 
 void Stage::DeleteBullet()
