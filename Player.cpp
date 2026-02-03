@@ -41,7 +41,10 @@ void Player::Draw()
 		scrPos[0].x, scrPos[0].y,
 		scrPos[1].x, scrPos[1].y,
 		scrPos[2].x, scrPos[2].y,
-		color_,true);
+		color_,false,1.1f);
+	Vector2D pos = Math2D::Sub(vertex_[1],vertex_[0]);
+	pos = Math2D::World2Screen(pos);
+	DrawCircle(pos.x, pos.y, 5, 0xfffff, false);
 }
 
 void Player::Update()

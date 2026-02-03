@@ -53,6 +53,8 @@ Enemy::Enemy(Size size, int segment)
 Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
 	:Bace(pos,vel,0xffffff), segment_(segment), isAlive_(true),size_(size)
 {
+	vel_ = Math2D::Add(vel_,{ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
+
 	if (segment_ < SEGMENT_MAX)
 	{
 		segment_ = SEGMENT_MAX;

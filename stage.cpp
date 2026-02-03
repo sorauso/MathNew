@@ -83,17 +83,15 @@ void Stage::Update()
 	}
 	if (!enemys.empty())
 	{
-		for (auto& eobj : enemys)
+		for (int i = 0;i<enemys.size();i++)
 		{
-			eobj->Update();
-		}
-	}
-	if (!enemys.empty())
-	{
-		for (auto& eobj : enemys)
-		{
-			Vector2D Epos = eobj->GetPos();
-			float Eradiuse = eobj->GetRadius();
+			enemys[i]->Update();
+			Vector2D Epos = enemys[i]->GetPos();
+			float Eradiuse = enemys[i]->GetRadius();
+			if (!enemys[i]->IsAlive())
+			{
+				continue;
+			}
 			if (!bullet.empty())
 			{
 				for (auto& bobj : bullet)
@@ -102,18 +100,41 @@ void Stage::Update()
 					float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
 					if (Dist < Eradiuse)
 					{
-						Enemy::Size size = eobj->CheckSize();
-						Vector2D Evel = eobj->GetVel();
-						eobj->Kill();
+						Enemy::Size size = enemys[i]->CheckSize();
+						Vector2D Evel = enemys[i]->GetVel();
+						enemys[i]->Kill();
 						bobj->Kill();
-						Enemy* e = new Enemy(Epos, Evel, size, 8);
-						enemys.push_back(e);
+						if (size == Enemy::Size::SMALL)
+						{
+
+						}
+						else if(size == Enemy::Size::MEDIUM)
+						{
+							for (int i = 0;i < GetRand(2) + 2;i++)
+							{
+								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::SMALL, 8);
+								enemys.push_back(e);
+							}
+						}
+						else if (size == Enemy::Size::LARGE)
+						{
+							for (int i = 0;i < GetRand(2) + 2;i++)
+							{
+								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::MEDIUM, 8);
+								enemys.push_back(e);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
 	
+	if (enemys.size() < ENEMY_MAX)
+	{
+		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
+		enemys.push_back(e);
+	}
 
 	player->Update();
 }
@@ -122,9 +143,9 @@ void Stage::Draw()
 {
 	if (!enemys.empty())
 	{
-		for (auto& obj : enemys)
+		for (int i = 0;i < enemys.size();i++)
 		{
-			obj->Draw();
+			enemys[i]->Draw();
 		}
 	}
 	if (!bullet.empty())

@@ -9,7 +9,6 @@ public:
 	void Draw() override;
 
 	bool osDead() const;
-	Vector2D GetPos() { return pos_; }
 	float GetRadius() const { return radius_; }
 	void Kill() { life_ = 0; }
  private:
