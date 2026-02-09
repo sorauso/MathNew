@@ -9,6 +9,7 @@ private:
     float omega_;
     Vector2D dir_;
     float radius_;
+    float CridRadius_;
 public:
     Player();
     Player(Vector2D pos, Vector2D vel, int color,Vector2D dir,float omega ,float radius);
@@ -16,4 +17,6 @@ public:
     void Draw() override;
     void Update() override;
     Vector2D GetVelocity();
+
+    float GetCrideRadius() { return CridRadius_; }
 };

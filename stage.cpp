@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include "ExplosionEffect.h"
 
 namespace
 {
@@ -13,7 +14,7 @@ namespace
 	const Vector2D START_VEL = { 0.0f,0.0f };
 	const Vector2D START_DIR = { 0.0f,-1.0f };
 	const float START_RADIUS = 30.0f;
-	const float START_OMEGA = 2.0f;
+	const float START_OMEGA = 2.5f;
 	const unsigned int START_COLOR = 0xfffffffff;
 	const unsigned int ENEMY_MAX = 10;
 
@@ -21,6 +22,7 @@ namespace
 
 	std::vector<Bullet*> bullet;
 	std::vector<Enemy*>enemys;
+	std::vector<ExplosionEffect*>effects;
 }
 
 Stage::Stage()
@@ -106,7 +108,8 @@ void Stage::Update()
 						bobj->Kill();
 						if (size == Enemy::Size::SMALL)
 						{
-
+							ExplosionEffect* eddect = new ExplosionEffect(Epos);
+							effects.push_back(eddect);
 						}
 						else if(size == Enemy::Size::MEDIUM)
 						{
@@ -127,6 +130,16 @@ void Stage::Update()
 					}
 				}
 			}
+			Vector2D Ppos = player->GetPos();
+			float Dist = Math2D::Length(Math2D::Sub(Epos, Ppos));
+			float Radius = Eradiuse + player->GetCrideRadius();
+			if (Dist < Radius)
+			{
+				ExplosionEffect* eddect = new ExplosionEffect(Ppos,1);
+				effects.push_back(eddect);
+			}
+
+
 		}
 	}
 	
@@ -137,6 +150,14 @@ void Stage::Update()
 	}
 
 	player->Update();
+
+	if (!effects.empty())
+	{
+		for (auto& obj : effects)
+		{
+			obj->Update();
+		}
+	}
 }
 
 void Stage::Draw()
@@ -158,6 +179,15 @@ void Stage::Draw()
 	player->Draw();
 	Vector2D Ppos = player->GetPos();
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "%lf : %lf", Ppos.x,Ppos.y);
+
+	if (!effects.empty())
+	{
+		for (auto& obj : effects)
+		{
+			obj->Draw();
+		}
+	}
+
 }
 
 void Stage::Release()

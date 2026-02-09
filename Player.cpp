@@ -25,6 +25,7 @@ Player::Player(Vector2D pos, Vector2D vel, int color,Vector2D dir, float omega, 
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,0 };
 	vertex_[2] = { 0,0 };
+	CridRadius_ = 15.0f;
 }
 
 Player::~Player()
@@ -42,9 +43,9 @@ void Player::Draw()
 		scrPos[1].x, scrPos[1].y,
 		scrPos[2].x, scrPos[2].y,
 		color_,false,1.1f);
-	Vector2D pos = Math2D::Sub(vertex_[1],vertex_[0]);
+	/*Vector2D pos = pos_;
 	pos = Math2D::World2Screen(pos);
-	DrawCircle(pos.x, pos.y, 5, 0xfffff, false);
+	DrawCircle(pos.x, pos.y, CridRadius_, 0xfffff, false);*/
 }
 
 void Player::Update()
