@@ -15,7 +15,7 @@ public:
         Vector2D vel;
         float life;
         float radius;
-        unsigned int color;
+        float alpha;
     };
 private:
     bool IsFinished_;

@@ -69,7 +69,7 @@ void Stage::Update()
 		}
 	}
 
-	if (Input::IsKeyDown(KEY_INPUT_Z))
+	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
 		Vector2D pos = Math2D::Add(player->GetPos(),player->GetVelocity());
 		Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
