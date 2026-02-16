@@ -68,6 +68,10 @@ Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
 
 void Enemy::Draw()
 {
+	if (IsAlive() == false)
+	{
+		return;
+	}
 	std::vector<Vector2D> scrVertex(segment_);
 	for (int i = 0; i < segment_; i++)
 	{
@@ -78,15 +82,20 @@ void Enemy::Draw()
 	}
 	for (int i = 0; i < segment_; i++)
 	{
-		Vector2D End = scrVertex[(i+1) % segment_];
+		Vector2D End = scrVertex[(i + 1) % segment_];
 		Vector2D Start = scrVertex[i];
 		DrawLineAA(Start.x, Start.y, End.x, End.y, color_, 1.0f);
 	}
 	//DrawCircleAA(pos_.x, WIN_HEIGHT - pos_.y, radius_,20, 0xfffff,0);
+	
 }
 
 void Enemy::Update()
 {
+	if (IsAlive() == false)
+	{
+		return;
+	}
 	float dt = GetDeltaTime();
 	pos_ = Math2D::Add(pos_, Math2D::Mul(vel_, dt));
 	if (pos_.x < 0) { pos_.x = WIN_WIDTH; }

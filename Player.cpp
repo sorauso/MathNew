@@ -17,6 +17,8 @@ Player::Player()
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,0 };
 	vertex_[2] = { 0,0 };
+	CridRadius_ = 15.0f;
+	isAlive_ = true;
 }
 
 Player::Player(Vector2D pos, Vector2D vel, int color,Vector2D dir, float omega, float radius)
@@ -26,6 +28,7 @@ Player::Player(Vector2D pos, Vector2D vel, int color,Vector2D dir, float omega, 
 	vertex_[1] = { 0,0 };
 	vertex_[2] = { 0,0 };
 	CridRadius_ = 15.0f;
+	isAlive_ = true;
 }
 
 Player::~Player()
@@ -34,6 +37,10 @@ Player::~Player()
 
 void Player::Draw()
 {
+	if (IsAlive() == false)
+	{
+		return;
+	}
 	Vector2D scrPos[3];
 	scrPos[0] = Math2D::World2Screen(vertex_[0]);
 	scrPos[1] = Math2D::World2Screen(vertex_[1]);
@@ -42,14 +49,19 @@ void Player::Draw()
 		scrPos[0].x, scrPos[0].y,
 		scrPos[1].x, scrPos[1].y,
 		scrPos[2].x, scrPos[2].y,
-		color_,false,1.1f);
+		color_, false, 1.1f);
 	/*Vector2D pos = pos_;
 	pos = Math2D::World2Screen(pos);
 	DrawCircle(pos.x, pos.y, CridRadius_, 0xfffff, false);*/
+	
 }
 
 void Player::Update()
 {
+	if (IsAlive() == false)
+	{
+		return;
+	}
 	const float PI = 3.14599236;
 	Vector2D p[3];
 	p[0] = { cos(90.0f * (PI / 180)), sin(90.0f * (PI / 180)) };

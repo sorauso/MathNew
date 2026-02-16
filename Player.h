@@ -10,6 +10,7 @@ private:
     Vector2D dir_;
     float radius_;
     float CridRadius_;
+    bool isAlive_;
 public:
     Player();
     Player(Vector2D pos, Vector2D vel, int color,Vector2D dir,float omega ,float radius);
@@ -19,4 +20,5 @@ public:
     Vector2D GetVelocity();
 
     float GetCrideRadius() { return CridRadius_; }
+    bool IsAlive() { return isAlive_; }
 };

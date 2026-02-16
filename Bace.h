@@ -1,5 +1,6 @@
 #pragma once
 #include "Math2.h"
+#include <string>
 
 class Bace
 {
@@ -8,9 +9,10 @@ protected:
 	Vector2D vel_;
 	int color_;
 	int shape_;
+	std::string objName_;
 public:
 	Bace();
-	Bace(Vector2D pos, Vector2D vel, int color);
+	Bace(Vector2D pos, Vector2D vel, int color,std::string objName);
 	~Bace();
 	virtual void Draw();
 	virtual void Update();

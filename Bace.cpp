@@ -5,8 +5,8 @@ Bace::Bace()
 {
 }
 
-Bace::Bace(Vector2D pos, Vector2D vel, int color)
-	:pos_(pos),vel_(vel),color_(color)
+Bace::Bace(Vector2D pos, Vector2D vel, int color,std::string objName)
+	:pos_(pos),vel_(vel),color_(color),objName_(objName)
 {
 }
 

@@ -1,3 +1,4 @@
+#include "Bace.h"
 #include "stage.h"
 #include "Math2.h"
 #include "Player.h"
@@ -23,6 +24,26 @@ namespace
 	std::vector<Bullet*> bullet;
 	std::vector<Enemy*>enemys;
 	std::vector<ExplosionEffect*>effects;
+
+	std::vector<Bace*>objects;
+	void AddObject(Bace* obj)
+	{
+		objects.push_back(obj);
+	}
+	void UpdateAllObject()
+	{
+		for (auto& itr : objects)
+		{
+			itr->Update();
+		}
+	}
+	void DrawAllObject()
+	{
+		for (auto& itr : objects)
+		{
+			itr->Draw();
+		}
+	}
 }
 
 Stage::Stage()
@@ -36,11 +57,13 @@ Stage::~Stage()
 void Stage::Init()
 {
 	player = new Player(START_POS, START_VEL, START_COLOR, START_DIR, START_OMEGA, START_RADIUS);
+	AddObject(player);
 
 	for (int i = 0;i < ENEMY_MAX;i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
 		enemys.push_back(e);
+		AddObject(e);
 	}
 }
 
@@ -48,7 +71,7 @@ void Stage::Update()
 {
 	for (auto it = bullet.begin(); it != bullet.end();)
 	{
-		if ((*it)->osDead() == true)
+		if ((*it)->IsDead() == true)
 		{
 			it = bullet.erase(it);
 		}
@@ -75,19 +98,13 @@ void Stage::Update()
 		Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
 		Bullet* b = new Bullet(pos, vel, GetColor(255, 255, 255), 1.0f, 0.5f);
 		bullet.push_back(b);
-	}
-	if (!bullet.empty())
-	{
-		for (auto& obj : bullet)
-		{
-			obj->Update();
-		}
+		AddObject(b);
 	}
 	if (!enemys.empty())
 	{
 		for (int i = 0;i<enemys.size();i++)
 		{
-			enemys[i]->Update();
+			//enemys[i]->Update();
 			Vector2D Epos = enemys[i]->GetPos();
 			float Eradiuse = enemys[i]->GetRadius();
 			if (!enemys[i]->IsAlive())
@@ -109,7 +126,8 @@ void Stage::Update()
 						if (size == Enemy::Size::SMALL)
 						{
 							ExplosionEffect* eddect = new ExplosionEffect(Epos);
-							effects.push_back(eddect);
+							//effects.push_back(eddect);
+							AddObject(eddect);
 						}
 						else if(size == Enemy::Size::MEDIUM)
 						{
@@ -117,6 +135,7 @@ void Stage::Update()
 							{
 								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::SMALL, 8);
 								enemys.push_back(e);
+								AddObject(e);
 							}
 						}
 						else if (size == Enemy::Size::LARGE)
@@ -125,6 +144,7 @@ void Stage::Update()
 							{
 								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::MEDIUM, 8);
 								enemys.push_back(e);
+								AddObject(e);
 							}
 						}
 					}
@@ -136,7 +156,8 @@ void Stage::Update()
 			if (Dist < Radius)
 			{
 				ExplosionEffect* eddect = new ExplosionEffect(Ppos,1);
-				effects.push_back(eddect);
+				//effects.push_back(eddect);
+				AddObject(eddect);
 			}
 
 
@@ -147,47 +168,16 @@ void Stage::Update()
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
 		enemys.push_back(e);
+		AddObject(e);
 	}
-
-	player->Update();
-
-	if (!effects.empty())
-	{
-		for (auto& obj : effects)
-		{
-			obj->Update();
-		}
-	}
+	UpdateAllObject();
 }
 
 void Stage::Draw()
 {
-	if (!enemys.empty())
-	{
-		for (int i = 0;i < enemys.size();i++)
-		{
-			enemys[i]->Draw();
-		}
-	}
-	if (!bullet.empty())
-	{
-		for (auto& obj : bullet)
-		{
-			obj->Draw();
-		}
-	}
-	player->Draw();
+	DrawAllObject();
 	Vector2D Ppos = player->GetPos();
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "%lf : %lf", Ppos.x,Ppos.y);
-
-	if (!effects.empty())
-	{
-		for (auto& obj : effects)
-		{
-			obj->Draw();
-		}
-	}
-
 }
 
 void Stage::Release()

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+
 class Enemy;
 class Player;
 class Stage
@@ -17,4 +18,5 @@ private:
 	Enemy* enemy_;*/
 	void DeleteBullet();
 	void ShootBullet();
+	void DeathObject();
 };

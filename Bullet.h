@@ -8,7 +8,7 @@ public:
 	void Update() override;
 	void Draw() override;
 
-	bool osDead() const;
+	bool IsDead() const;
 	float GetRadius() const { return radius_; }
 	void Kill() { life_ = 0; }
  private:

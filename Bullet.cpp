@@ -9,6 +9,10 @@ Bullet::Bullet(const Vector2D& pos, const Vector2D& vel, unsigned int color, flo
 
 void Bullet::Update()
 {
+	if (IsDead() == true)
+	{
+		return;
+	}
 	float dt = GetDeltaTime();
 	//pos_.x = pos_.x + vel_.x * dt;
 	//pos_.y = pos_.y + vel_.y * dt;
@@ -52,12 +56,16 @@ void Bullet::Update()
 
 void Bullet::Draw()
 {
+	if (IsDead() == true)
+	{
+		return;
+	}
 	Vector2D sPos = Math2D::World2Screen(pos_);
 	DrawCircle((int)sPos.x, (int)sPos.y, radius_, color_, true);
 	//DrawCircle(pos_.x, pos_.y, radius_, color_, true);
 }
 
-bool Bullet::osDead() const
+bool Bullet::IsDead() const
 {
 	return life_ <= 0.0f;
 }
