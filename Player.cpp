@@ -22,7 +22,7 @@ Player::Player()
 }
 
 Player::Player(Vector2D pos, Vector2D vel, int color,Vector2D dir, float omega, float radius)
-	:Bace(pos, vel, color),radius_(radius),angle_(0),omega_(omega),dir_(dir)
+	:Bace(pos, vel, color,"Player"), radius_(radius), angle_(0), omega_(omega), dir_(dir)
 {
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,0 };

@@ -16,7 +16,7 @@ public:
 private:
 	/*Player* palyer_;
 	Enemy* enemy_;*/
-	void DeleteBullet();
 	void ShootBullet();
 	void DeathObject();
+	void ObjectHit();
 };

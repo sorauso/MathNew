@@ -3,7 +3,7 @@
 #include <DxLib.h>
 
 Bullet::Bullet(const Vector2D& pos, const Vector2D& vel, unsigned int color, float radius, float life)
-	:Bace(pos,vel,color),radius_(radius),life_(life), isDead(false)
+	:Bace(pos,vel,color,"Bullet"), radius_(radius), life_(life), isDead(false)
 {
 }
 

@@ -69,6 +69,47 @@ void Stage::Init()
 
 void Stage::Update()
 {
+	
+	DeathObject();
+	if (Input::IsKeyDown(KEY_INPUT_SPACE))
+	{
+		ShootBullet();
+	}
+	
+	ObjectHit();
+	if (enemys.size() < ENEMY_MAX)
+	{
+		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
+		enemys.push_back(e);
+		AddObject(e);
+	}
+	UpdateAllObject();
+}
+
+void Stage::Draw()
+{
+	DrawAllObject();
+	Vector2D Ppos = player->GetPos();
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "%lf : %lf", Ppos.x,Ppos.y);
+}
+
+void Stage::Release()
+{
+	if(player != nullptr)
+		delete player;
+}
+
+void Stage::ShootBullet()
+{
+	Vector2D pos = Math2D::Add(player->GetPos(), player->GetVelocity());
+	Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
+	Bullet* b = new Bullet(pos, vel, GetColor(255, 255, 255), 1.0f, 0.5f);
+	bullet.push_back(b);
+	AddObject(b);
+}
+
+void Stage::DeathObject()
+{
 	for (auto it = bullet.begin(); it != bullet.end();)
 	{
 		if ((*it)->IsDead() == true)
@@ -91,18 +132,13 @@ void Stage::Update()
 			it++;
 		}
 	}
+}
 
-	if (Input::IsKeyDown(KEY_INPUT_SPACE))
-	{
-		Vector2D pos = Math2D::Add(player->GetPos(),player->GetVelocity());
-		Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
-		Bullet* b = new Bullet(pos, vel, GetColor(255, 255, 255), 1.0f, 0.5f);
-		bullet.push_back(b);
-		AddObject(b);
-	}
+void Stage::ObjectHit()
+{
 	if (!enemys.empty())
 	{
-		for (int i = 0;i<enemys.size();i++)
+		for (int i = 0;i < enemys.size();i++)
 		{
 			//enemys[i]->Update();
 			Vector2D Epos = enemys[i]->GetPos();
@@ -129,7 +165,7 @@ void Stage::Update()
 							//effects.push_back(eddect);
 							AddObject(eddect);
 						}
-						else if(size == Enemy::Size::MEDIUM)
+						else if (size == Enemy::Size::MEDIUM)
 						{
 							for (int i = 0;i < GetRand(2) + 2;i++)
 							{
@@ -155,7 +191,7 @@ void Stage::Update()
 			float Radius = Eradiuse + player->GetCrideRadius();
 			if (Dist < Radius)
 			{
-				ExplosionEffect* eddect = new ExplosionEffect(Ppos,1);
+				ExplosionEffect* eddect = new ExplosionEffect(Ppos, 1);
 				//effects.push_back(eddect);
 				AddObject(eddect);
 			}
@@ -163,33 +199,4 @@ void Stage::Update()
 
 		}
 	}
-	
-	if (enemys.size() < ENEMY_MAX)
-	{
-		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
-		enemys.push_back(e);
-		AddObject(e);
-	}
-	UpdateAllObject();
-}
-
-void Stage::Draw()
-{
-	DrawAllObject();
-	Vector2D Ppos = player->GetPos();
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "%lf : %lf", Ppos.x,Ppos.y);
-}
-
-void Stage::Release()
-{
-	if(player != nullptr)
-		delete player;
-}
-
-void Stage::DeleteBullet()
-{
-}
-
-void Stage::ShootBullet()
-{
 }
