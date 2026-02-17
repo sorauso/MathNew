@@ -4,19 +4,28 @@
 
 class Bace
 {
+public:
+	enum ClassName
+	{
+		PLAYER,
+		BULLET,
+		ENEMY,
+		EFFECT
+	};
 protected:
 	Vector2D pos_;
 	Vector2D vel_;
 	int color_;
 	int shape_;
-	std::string objName_;
+	ClassName objName_;
 public:
 	Bace();
-	Bace(Vector2D pos, Vector2D vel, int color,std::string objName);
+	Bace(Vector2D pos, Vector2D vel, int color,ClassName objName);
 	~Bace();
 	virtual void Draw();
 	virtual void Update();
 public:
+	
 	void SetPos(const Vector2D& pos) { pos_ = pos; }
 	Vector2D GetPos() const { return pos_; }
 	void SetVel(const Vector2D& vel) { vel_ = vel; }
@@ -25,4 +34,5 @@ public:
 	unsigned int GetCharaColor() const { return color_; }
 	void SetShape(const int shape) { shape_ = shape; }
 	int GetShape() const { return shape_; }
+	ClassName GetName()const { return objName_; }
 };

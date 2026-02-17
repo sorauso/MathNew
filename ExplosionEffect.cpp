@@ -13,7 +13,7 @@ namespace
 }
 
 ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
-	:Bace(pos, {0.0f,0.0f},GetColor(255,255,255),"Effect")
+	:Bace(pos, {0.0f,0.0f},GetColor(255,255,255),Bace::ClassName::EFFECT)
 {
 	particles_.clear();
 	IsFinished_ = false;

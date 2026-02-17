@@ -21,8 +21,8 @@ namespace
 
 	Player* player = nullptr;
 
-	std::vector<Bullet*> bullet;
-	std::vector<Enemy*>enemys;
+	/*std::vector<Bullet*> bullet;
+	std::vector<Enemy*>enemys;*/
 	std::vector<ExplosionEffect*>effects;
 
 	std::vector<Bace*>objects;
@@ -62,7 +62,7 @@ void Stage::Init()
 	for (int i = 0;i < ENEMY_MAX;i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
-		enemys.push_back(e);
+		//enemys.push_back(e);
 		AddObject(e);
 	}
 }
@@ -77,12 +77,6 @@ void Stage::Update()
 	}
 	
 	ObjectHit();
-	if (enemys.size() < ENEMY_MAX)
-	{
-		Enemy* e = new Enemy(Enemy::Size::LARGE, 8);
-		enemys.push_back(e);
-		AddObject(e);
-	}
 	UpdateAllObject();
 }
 
@@ -104,40 +98,56 @@ void Stage::ShootBullet()
 	Vector2D pos = Math2D::Add(player->GetPos(), player->GetVelocity());
 	Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
 	Bullet* b = new Bullet(pos, vel, GetColor(255, 255, 255), 1.0f, 0.5f);
-	bullet.push_back(b);
+	//bullet.push_back(b);
 	AddObject(b);
 }
 
 void Stage::DeathObject()
 {
-	for (auto it = bullet.begin(); it != bullet.end();)
+	for (auto obj : objects)
 	{
-		if ((*it)->IsDead() == true)
+		if (obj->GetName() == Bace::ClassName::BULLET)
 		{
-			it = bullet.erase(it);
+
+		}
+		else if (obj->GetName() == Bace::ClassName::ENEMY)
+		{
+
+		}
+	}
+	for (auto it = objects.begin(); it != objects.end();)
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
 		}
 		else
 		{
 			it++;
 		}
 	}
-	for (auto it = enemys.begin(); it != enemys.end();)
-	{
-		if ((*it)->IsAlive() == false)
-		{
-			it = enemys.erase(it);
-		}
-		else
-		{
-			it++;
-		}
-	}
+	
 }
 
 void Stage::ObjectHit()
 {
-	if (!enemys.empty())
+	std::vector<Bullet*> bullet;
+	std::vector<Enemy*>enemys;
+	for (auto &obj : objects)
 	{
+		if (obj->GetName() == Bace::ClassName::BULLET)
+		{
+			Bullet* b = (Bullet*)obj;
+			bullet.push_back(b);
+		}
+		else if (obj->GetName() == Bace::ClassName::ENEMY)
+		{
+			Enemy* e = (Enemy*)obj;
+			enemys.push_back(e);
+		}
+	}
+	//if (!enemys.empty())
+	//{
 		for (int i = 0;i < enemys.size();i++)
 		{
 			//enemys[i]->Update();
@@ -170,7 +180,7 @@ void Stage::ObjectHit()
 							for (int i = 0;i < GetRand(2) + 2;i++)
 							{
 								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::SMALL, 8);
-								enemys.push_back(e);
+								//enemys.push_back(e);
 								AddObject(e);
 							}
 						}
@@ -179,7 +189,7 @@ void Stage::ObjectHit()
 							for (int i = 0;i < GetRand(2) + 2;i++)
 							{
 								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::MEDIUM, 8);
-								enemys.push_back(e);
+								//enemys.push_back(e);
 								AddObject(e);
 							}
 						}
@@ -198,5 +208,5 @@ void Stage::ObjectHit()
 
 
 		}
-	}
+	//}
 }
