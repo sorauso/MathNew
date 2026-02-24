@@ -34,6 +34,6 @@ public:
 	unsigned int GetCharaColor() const { return color_; }
 	void SetShape(const int shape) { shape_ = shape; }
 	int GetShape() const { return shape_; }
-	void SetName(const ClassName Name) {}
+	void SetName(const ClassName Name) { objName_ = Name; }
 	ClassName GetName()const { return objName_; }
 };
