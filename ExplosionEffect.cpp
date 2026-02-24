@@ -13,10 +13,13 @@ namespace
 }
 
 ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
-	:Bace(pos, {0.0f,0.0f},GetColor(255,255,255),Bace::ClassName::EFFECT)
+	:Bace(pos, {0.0f,0.0f},GetColor(255,250,250), Bace::ClassName::EFFECT)
 {
 	particles_.clear();
 	IsFinished_ = false;
+	color[0] = 255;
+	color[1] = 255;
+	color[2] = 255;
 
 	for (int i = 0;i < particleCount;i++)
 	{
@@ -90,8 +93,11 @@ void ExplosionEffect::Draw()
 		{
 			Vector2D drawPos = Math2D::Add(GetPos(), par.offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
-			int ParColor = 255 * par.alpha;
-			DrawCircle((int)screenPos.x, (int)screenPos.y, par.radius, GetColor(ParColor, ParColor, ParColor));
+			int CR = color[0] * par.alpha;
+			int CG = color[1] * par.alpha;
+			int CB = color[2] * par.alpha;
+			int ParColor = GetColor(CR,CG,CB);
+			DrawCircle((int)screenPos.x, (int)screenPos.y, par.radius, ParColor);
 		}
 	 }
 }

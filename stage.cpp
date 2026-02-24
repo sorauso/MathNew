@@ -56,6 +56,7 @@ namespace
 
 Stage::Stage()
 {
+	score_ = 0.0f;
 }
 
 Stage::~Stage()
@@ -77,7 +78,8 @@ void Stage::Init()
 
 void Stage::Update()
 {
-	
+	float dt = GetDeltaTime();
+	score_ += dt * 2;
 	DeathObject();
 	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
@@ -91,8 +93,7 @@ void Stage::Update()
 void Stage::Draw()
 {
 	DrawAllObject();
-	Vector2D Ppos = player->GetPos();
-	DrawFormatString(0, 0, COLOR_WHIGHT, "%lf : %lf", Ppos.x,Ppos.y);
+	DrawFormatString(0, 0, COLOR_WHIGHT, "%.0lf", score_ * 100);
 }
 
 void Stage::Release()
@@ -126,19 +127,7 @@ void Stage::DeathObject()
 			}
 		}
 	}
-	for (auto it = objects.begin(); it != objects.end();)
-	{
-		if (*it == nullptr)
-		{
-			it = objects.erase(it);
-		}
-		else
-		{
-			it++;
-		}
-	}
-
-
+	DereteObject();
 
 	for(auto& obj : objects)
 	{
@@ -152,6 +141,25 @@ void Stage::DeathObject()
 			}
 		}
 	}
+	DereteObject();
+
+	for (auto& obj : objects)
+	{
+		if (obj->GetName() == Bace::ClassName::EFFECT)
+		{
+			ExplosionEffect* e = (ExplosionEffect*)(obj);
+			if (e->IsFinished() == true)
+			{
+				delete e;
+				obj = nullptr;
+			}
+		}
+	}
+	DereteObject();
+}
+
+void Stage::DereteObject()
+{
 	for (auto it = objects.begin(); it != objects.end();)
 	{
 		if (*it == nullptr)
@@ -163,7 +171,6 @@ void Stage::DeathObject()
 			it++;
 		}
 	}
-	
 }
 
 void Stage::ObjectHit()
@@ -186,6 +193,13 @@ void Stage::ObjectHit()
 			Enemy* e = (Enemy*)obj;
 			enemys.push_back(e);
 		}
+	}
+	if (enemys.size() < ENEMY_MAX)
+	{
+		Vector2D pos = { (float)GetRand(WIN_WIDTH - 1),0.0f };
+		Vector2D vel = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+		Enemy* e = new Enemy(pos,vel,Enemy::Size::LARGE, 8);
+		AddObject(e, Bace::ClassName::ENEMY);
 	}
 	
 	for (int i = 0;i < enemys.size();i++)
@@ -213,11 +227,11 @@ void Stage::ObjectHit()
 					{
 						ExplosionEffect* eddect = new ExplosionEffect(Epos);
 						//effects.push_back(eddect);
-						AddObject(eddect, Bace::ClassName::ENEMY);
+						AddObject(eddect, Bace::ClassName::EFFECT);
 					}
 					else if (size == Enemy::Size::MEDIUM)
 					{
-						for (int i = 0;i < GetRand(2) + 2;i++)
+						for (int i = 0;i < GetRand(3) + 2;i++)
 						{
 							Enemy* e = new Enemy(Epos, Evel, Enemy::Size::SMALL, 8);
 							//enemys.push_back(e);
@@ -226,7 +240,7 @@ void Stage::ObjectHit()
 					}
 					else if (size == Enemy::Size::LARGE)
 					{
-						for (int i = 0;i < GetRand(2) + 2;i++)
+						for (int i = 0;i < GetRand(3) + 2;i++)
 						{
 							Enemy* e = new Enemy(Epos, Evel, Enemy::Size::MEDIUM, 8);
 							//enemys.push_back(e);
@@ -241,7 +255,9 @@ void Stage::ObjectHit()
 		float Radius = Eradiuse + player->GetCrideRadius();
 		if (Dist < Radius)
 		{
+			score_ -= 0.1f;
 			ExplosionEffect* eddect = new ExplosionEffect(Ppos, 1);
+			eddect->SetColor(255,0,0);
 			//effects.push_back(eddect);
 			AddObject(eddect, Bace::ClassName::EFFECT);
 		}

@@ -18,5 +18,8 @@ private:
 	Enemy* enemy_;*/
 	void ShootBullet();
 	void DeathObject();
+	void DereteObject();
 	void ObjectHit();
+
+	float score_;
 };
