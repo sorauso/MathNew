@@ -21,4 +21,5 @@ public:
 
     float GetCrideRadius() { return CridRadius_; }
     bool IsAlive() { return isAlive_; }
+    void Kill() { isAlive_ = false; }
 };

@@ -17,14 +17,21 @@ namespace
 	const float START_RADIUS = 30.0f;
 	const float START_OMEGA = 2.5f;
 	const unsigned int START_COLOR = 0xfffffffff;
-	const unsigned int ENEMY_MAX = 10;
+	const unsigned int ENEMY_MAX = 1;
 	const unsigned int COLOR_WHIGHT = GetColor(255,255,255);
+	const float DamageRatio = 0.9f;
+	const int UpScoreHit = 1;
+	const int UpScoreKILL = 5;
+	const int RandomVel = 100;
 
-	Player* player = nullptr;
-
-	/*std::vector<Bullet*> bullet;
-	std::vector<Enemy*>enemys;*/
-	std::vector<ExplosionEffect*>effects;
+	unsigned int stageState;
+	unsigned int counter;
+	unsigned int GamuOverCounter;
+	unsigned int ComandFlerm;
+	unsigned long long score_;
+	float Timer_;
+	bool omegaDrast;
+	unsigned int comandCounter;
 
 	std::vector<Bace*>objects;
 	void AddObject(Bace* obj, Bace::ClassName Name)
@@ -56,11 +63,6 @@ namespace
 
 Stage::Stage()
 {
-	counter = 0;
-	score_ = 0;
-	Timer_ = 0.0f;
-	omegaDrast = false;
-	comandCounter = 0;
 }
 
 Stage::~Stage()
@@ -69,23 +71,38 @@ Stage::~Stage()
 
 void Stage::Init()
 {
-	player = new Player(START_POS, START_VEL, START_COLOR, START_DIR, START_OMEGA, START_RADIUS);
-	AddObject(player, Bace::ClassName::PLAYER);
+	objects.clear();
 
-	for (int i = 0;i < ENEMY_MAX;i++)
+	GamuOverCounter = 0;
+	stageState = 0;
+	counter = 1;
+	ComandFlerm = 0;
+	score_ = 100;
+	Timer_ = 0.0f;
+	omegaDrast = false;
+	comandCounter = 0;
+
+	Player* player = new Player(START_POS, START_VEL, START_COLOR, START_DIR, START_OMEGA, START_RADIUS);
+	AddObject(player, Bace::ClassName::PLAYER);
+}
+
+void Stage::TitleUpdate()
+{
+	Init();
+	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
-		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
-		//enemys.push_back(e);
-		AddObject(e,Bace::ClassName::ENEMY);
+		stageState = 1;
 	}
 }
 
-void Stage::Update()
+void Stage::PlayUpdate()
 {
 	float dt = GetDeltaTime();
 	Timer_ += dt;
 	DeathObject();
 	Comand();
+	ObjectHit();
+	UpdateAllObject();
 	if (omegaDrast == false)
 	{
 		if (Input::IsKeyDown(KEY_INPUT_SPACE))
@@ -103,13 +120,36 @@ void Stage::Update()
 			}
 		}
 	}
-	
-	ObjectHit();
-	UpdateAllObject();
-	
+	if (counter % 200 == 0)
+	{
+		Vector2D pos = { (float)GetRand(WIN_WIDTH - 1),0.0f };
+		Vector2D vel = { (float)(GetRand(RandomVel * 2) - RandomVel),(float)(GetRand(RandomVel * 2) - RandomVel) };
+		Enemy* e = new Enemy(pos, vel, Enemy::Size::LARGE, 8);
+		AddObject(e, Bace::ClassName::ENEMY);
+	}
+	counter++;
 }
 
-void Stage::Draw()
+void Stage::GameOverUpadate()
+{
+	if (Input::IsKeyDown(KEY_INPUT_SPACE))
+	{
+		stageState = 0;
+	}
+}
+
+void Stage::TitleDraw()
+{
+	int fontsize = GetFontSize();
+	SetFontSize(80);
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "ASTROIDS", COLOR_WHIGHT);
+	SetFontSize(20);
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", COLOR_WHIGHT);
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 150, "　　　 　 ／ ⌒ヽ\n⊂二二二（ ＾ω＾）二⊃\n         | 　　 / 　　 　ﾌﾞｰﾝ\n        （　ヽノ\n         ﾉ > ノ\n   三　　レﾚ\n", COLOR_WHIGHT);
+	SetFontSize(fontsize);
+}
+
+void Stage::PlayDraw()
 {
 	DrawAllObject();
 	int fontsize = GetFontSize();
@@ -118,24 +158,76 @@ void Stage::Draw()
 	SetFontSize(20);
 	DrawFormatString(0, 40, COLOR_WHIGHT, "TIME : %.0lf", Timer_);
 	SetFontSize(fontsize);
-	DrawFormatString(0, 100, COLOR_WHIGHT, "SCORE : %d", comandCounter);
+}
+
+void Stage::GameOverDraw()
+{
+	int fontsize = GetFontSize();
+	SetFontSize(80);
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "GAMU_OVER", COLOR_WHIGHT);
+	SetFontSize(20);
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", COLOR_WHIGHT);
+	DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 4 + 150, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　　♪＼(^o^)　♪\n　　   　　　　 ＿  ) 　> ＿ ｷｭｯｷｭ♪\n　    　　　　／.◎。／◎｡／|\n　 ＼(^o^)／.|￣￣￣￣￣|　 | 　＼(^o^)／\n 　  )　 )  .|　　　　　|／　　　ノ　ノ\n(((  >￣ > )))　＼(^o^)／　 ((　<￣<　)))\n   　　　　　 　 　)　 )\n　　　　　　((( 　 >￣ > ))))\n", COLOR_WHIGHT);
+	SetFontSize(fontsize);
+}
+
+void Stage::Update()
+{
+	if (stageState == 0)
+	{
+		TitleUpdate();
+	}
+	else if (stageState == 1)
+	{
+		PlayUpdate();
+	}
+	else if(stageState == 2)
+	{
+		GameOverUpadate();
+	}
+
+}
+
+void Stage::Draw()
+{
+	if (stageState == 0)
+	{
+		TitleDraw();
+	}
+	else if (stageState == 1)
+	{
+		PlayDraw();
+	}
+	else if(stageState == 2)
+	{
+		GameOverDraw();
+	}
 }
 
 void Stage::Release()
 {
-	if(player != nullptr)
-		delete player;
 }
 
 void Stage::ShootBullet()
 {
-	Vector2D pos = Math2D::Add(player->GetPos(), player->GetVelocity());
-	Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
-	float r = 1.0f;
-	float Life = 0.5f;
-	Bullet* b = new Bullet(pos, vel, COLOR_WHIGHT, r, Life);
-	//bullet.push_back(b);
-	AddObject(b, Bace::ClassName::BULLET);
+	Player* player = nullptr;
+	for (auto& obj : objects)
+	{
+		if (obj->GetName() == Bace::ClassName::PLAYER)
+		{
+			player = (Player*)obj;
+		}
+	}
+	if (player != nullptr)
+	{
+		Vector2D pos = Math2D::Add(player->GetPos(), player->GetVelocity());
+		Vector2D vel = Math2D::Mul(player->GetVelocity(), 30.0f);
+		float r = 1.0f;
+		float Life = 0.5f;
+		Bullet* b = new Bullet(pos, vel, COLOR_WHIGHT, r, Life);
+		//bullet.push_back(b);
+		AddObject(b, Bace::ClassName::BULLET);
+	}
 }
 
 void Stage::DeathObject()
@@ -154,7 +246,7 @@ void Stage::DeathObject()
 	}
 	DereteObject();
 
-	for(auto& obj : objects)
+	for (auto& obj : objects)
 	{
 		if (obj->GetName() == Bace::ClassName::ENEMY)
 		{
@@ -181,6 +273,20 @@ void Stage::DeathObject()
 		}
 	}
 	DereteObject();
+
+	for (auto& obj : objects)
+	{
+		if (obj->GetName() == Bace::ClassName::PLAYER)
+		{
+			Player* p = (Player*)(obj);
+			if (p->IsAlive() == false)
+			{
+				delete p;
+				obj = nullptr;
+			}
+		}
+	}
+	DereteObject();
 }
 
 void Stage::DereteObject()
@@ -198,10 +304,12 @@ void Stage::DereteObject()
 	}
 }
 
+
 void Stage::ObjectHit()
 {
 	std::vector<Bullet*> bullet;
 	std::vector<Enemy*>enemys;
+	Player* player = nullptr;
 	
 	bullet.clear();
 	enemys.clear();
@@ -218,13 +326,29 @@ void Stage::ObjectHit()
 			Enemy* e = (Enemy*)obj;
 			enemys.push_back(e);
 		}
+		else if (obj->GetName() == Bace::ClassName::PLAYER)
+		{
+			player = (Player*)obj;
+		}
 	}
-	if (enemys.size() < ENEMY_MAX)
+	if (enemys.size() < ENEMY_MAX + (Timer_/10))
 	{
 		Vector2D pos = { (float)GetRand(WIN_WIDTH - 1),0.0f };
-		Vector2D vel = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+		Vector2D vel = { (float)(GetRand(RandomVel * 2) - RandomVel),(float)(GetRand(RandomVel * 2) - RandomVel) };
 		Enemy* e = new Enemy(pos,vel,Enemy::Size::LARGE, 8);
 		AddObject(e, Bace::ClassName::ENEMY);
+	}
+	if (player == nullptr)
+	{
+		GamuOverCounter++;
+		if (GamuOverCounter > 200)
+		{
+			stageState = 2;
+		}
+	}
+	else
+	{
+		GamuOverCounter = 0;
 	}
 	
 	for (int i = 0;i < enemys.size();i++)
@@ -244,14 +368,14 @@ void Stage::ObjectHit()
 				float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
 				if (Dist < Eradiuse)
 				{
-					score_ += 1;
+					score_ += UpScoreHit;
 					Enemy::Size size = enemys[i]->CheckSize();
 					Vector2D Evel = enemys[i]->GetVel();
 					enemys[i]->Kill();
 					bobj->Kill();
 					if (size == Enemy::Size::SMALL)
 					{
-						score_ += 5;
+						score_ += UpScoreKILL;
 						ExplosionEffect* eddect = new ExplosionEffect(Epos);
 						//effects.push_back(eddect);
 						AddObject(eddect, Bace::ClassName::EFFECT);
@@ -277,18 +401,32 @@ void Stage::ObjectHit()
 				}
 			}
 		}
-		Vector2D Ppos = player->GetPos();
-		float Dist = Math2D::Length(Math2D::Sub(Epos, Ppos));
-		float Radius = Eradiuse + player->GetCrideRadius();
-		if (Dist < Radius)
+		if (player != nullptr)
 		{
-			score_ -= 2;
-			ExplosionEffect* eddect = new ExplosionEffect(Ppos, 1);
-			eddect->SetColor(255,0,0);
-			//effects.push_back(eddect);
-			AddObject(eddect, Bace::ClassName::EFFECT);
+			if (omegaDrast == true)
+			{
+				player->SetCharaColor(GetColor(255, 0, 0));
+			}
+			Vector2D Ppos = player->GetPos();
+			if (score_ <= 0)
+			{
+				ExplosionEffect* eddect = new ExplosionEffect(Ppos, 20);
+				eddect->SetColor(255, 0, 0);
+				//effects.push_back(eddect);
+				AddObject(eddect, Bace::ClassName::EFFECT);
+				player->Kill();
+			}
+			float Dist = Math2D::Length(Math2D::Sub(Epos, Ppos));
+			float Radius = Eradiuse + player->GetCrideRadius();
+			if (Dist < Radius)
+			{
+				score_ *= DamageRatio;
+				ExplosionEffect* eddect = new ExplosionEffect(Ppos, 1);
+				eddect->SetColor(255, 0, 0);
+				//effects.push_back(eddect);
+				AddObject(eddect, Bace::ClassName::EFFECT);
+			}
 		}
-
 
 	}
 
@@ -296,14 +434,14 @@ void Stage::ObjectHit()
 
 void Stage::Comand()
 {
-	if (counter > 30)
+	if (ComandFlerm > 10)
 	{
 		comandCounter = 0;
-		counter = 0;
+		ComandFlerm = 0;
 	}
 	if (comandCounter > 0)
 	{
-		counter++;
+		ComandFlerm++;
 	}
 	switch (comandCounter)
 	{
@@ -311,46 +449,54 @@ void Stage::Comand()
 		if (Input::IsKeyDown(KEY_INPUT_D))
 		{
 			comandCounter = 1;
+			ComandFlerm = 0;
 		}
 		break;
 	case 1:
 		if (Input::IsKeyDown(KEY_INPUT_S))
 		{
 			comandCounter = 2;
+			ComandFlerm = 0;
 		}
 		break;
 	case 2:
 		if (Input::IsKeyDown(KEY_INPUT_A))
 		{
 			comandCounter = 3;
+			ComandFlerm = 0;
 		}
 		break;
 	case 3:
 		if (Input::IsKeyDown(KEY_INPUT_D))
 		{
 			comandCounter = 4;
+			ComandFlerm = 0;
 		}
 		break;
 	case 4:
 		if (Input::IsKeyDown(KEY_INPUT_S))
 		{
 			comandCounter = 5;
+			ComandFlerm = 0;
 		}
 		break;
 	case 5:
 		if (Input::IsKeyDown(KEY_INPUT_A))
 		{
 			comandCounter = 6;
+			ComandFlerm = 0;
 		}
 		break;
 	case 6:
 		if (Input::IsKeyDown(KEY_INPUT_B))
 		{
 			comandCounter = 7;
+			ComandFlerm = 0;
 		}
 		break;
 	case 7:
 		omegaDrast = true;
+		break;
 	default:
 		break;
 	}

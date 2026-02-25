@@ -10,21 +10,20 @@ public:
 	Stage();
 	~Stage();
 	void Init();
+	void TitleUpdate();
+	void PlayUpdate();
+	void GameOverUpadate();
+
+	void TitleDraw();
+	void PlayDraw();
+	void GameOverDraw();
 	void Update();
 	void Draw();
 	void Release();
 private:
-	/*Player* palyer_;
-	Enemy* enemy_;*/
 	void ShootBullet();
 	void DeathObject();
 	void DereteObject();
 	void ObjectHit();
 	void Comand();
-
-	unsigned int counter;
-	unsigned long long score_;
-	float Timer_;
-	bool omegaDrast;
-	unsigned int comandCounter;
 };
