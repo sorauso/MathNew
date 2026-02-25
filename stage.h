@@ -20,6 +20,11 @@ private:
 	void DeathObject();
 	void DereteObject();
 	void ObjectHit();
+	void Comand();
 
-	float score_;
+	unsigned int counter;
+	unsigned long long score_;
+	float Timer_;
+	bool omegaDrast;
+	unsigned int comandCounter;
 };

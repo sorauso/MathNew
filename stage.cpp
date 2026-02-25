@@ -56,7 +56,11 @@ namespace
 
 Stage::Stage()
 {
-	score_ = 0.0f;
+	counter = 0;
+	score_ = 0;
+	Timer_ = 0.0f;
+	omegaDrast = false;
+	comandCounter = 0;
 }
 
 Stage::~Stage()
@@ -79,21 +83,42 @@ void Stage::Init()
 void Stage::Update()
 {
 	float dt = GetDeltaTime();
-	score_ += dt * 2;
+	Timer_ += dt;
 	DeathObject();
-	if (Input::IsKeyDown(KEY_INPUT_SPACE))
+	Comand();
+	if (omegaDrast == false)
 	{
-		ShootBullet();
+		if (Input::IsKeyDown(KEY_INPUT_SPACE))
+		{
+			ShootBullet();
+		}
+	}
+	else
+	{
+		if (Input::IsKeepKeyDown(KEY_INPUT_SPACE))
+		{
+			for (int i = 0;i < 5;i++)
+			{
+				ShootBullet();
+			}
+		}
 	}
 	
 	ObjectHit();
 	UpdateAllObject();
+	
 }
 
 void Stage::Draw()
 {
 	DrawAllObject();
-	DrawFormatString(0, 0, COLOR_WHIGHT, "%.0lf", score_ * 100);
+	int fontsize = GetFontSize();
+	SetFontSize(30);
+	DrawFormatString(0, 0, COLOR_WHIGHT, "SCORE : %0lld", score_);
+	SetFontSize(20);
+	DrawFormatString(0, 40, COLOR_WHIGHT, "TIME : %.0lf", Timer_);
+	SetFontSize(fontsize);
+	DrawFormatString(0, 100, COLOR_WHIGHT, "SCORE : %d", comandCounter);
 }
 
 void Stage::Release()
@@ -219,12 +244,14 @@ void Stage::ObjectHit()
 				float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
 				if (Dist < Eradiuse)
 				{
+					score_ += 1;
 					Enemy::Size size = enemys[i]->CheckSize();
 					Vector2D Evel = enemys[i]->GetVel();
 					enemys[i]->Kill();
 					bobj->Kill();
 					if (size == Enemy::Size::SMALL)
 					{
+						score_ += 5;
 						ExplosionEffect* eddect = new ExplosionEffect(Epos);
 						//effects.push_back(eddect);
 						AddObject(eddect, Bace::ClassName::EFFECT);
@@ -255,7 +282,7 @@ void Stage::ObjectHit()
 		float Radius = Eradiuse + player->GetCrideRadius();
 		if (Dist < Radius)
 		{
-			score_ -= 0.1f;
+			score_ -= 2;
 			ExplosionEffect* eddect = new ExplosionEffect(Ppos, 1);
 			eddect->SetColor(255,0,0);
 			//effects.push_back(eddect);
@@ -265,4 +292,66 @@ void Stage::ObjectHit()
 
 	}
 
+}
+
+void Stage::Comand()
+{
+	if (counter > 30)
+	{
+		comandCounter = 0;
+		counter = 0;
+	}
+	if (comandCounter > 0)
+	{
+		counter++;
+	}
+	switch (comandCounter)
+	{
+	case 0:
+		if (Input::IsKeyDown(KEY_INPUT_D))
+		{
+			comandCounter = 1;
+		}
+		break;
+	case 1:
+		if (Input::IsKeyDown(KEY_INPUT_S))
+		{
+			comandCounter = 2;
+		}
+		break;
+	case 2:
+		if (Input::IsKeyDown(KEY_INPUT_A))
+		{
+			comandCounter = 3;
+		}
+		break;
+	case 3:
+		if (Input::IsKeyDown(KEY_INPUT_D))
+		{
+			comandCounter = 4;
+		}
+		break;
+	case 4:
+		if (Input::IsKeyDown(KEY_INPUT_S))
+		{
+			comandCounter = 5;
+		}
+		break;
+	case 5:
+		if (Input::IsKeyDown(KEY_INPUT_A))
+		{
+			comandCounter = 6;
+		}
+		break;
+	case 6:
+		if (Input::IsKeyDown(KEY_INPUT_B))
+		{
+			comandCounter = 7;
+		}
+		break;
+	case 7:
+		omegaDrast = true;
+	default:
+		break;
+	}
 }
