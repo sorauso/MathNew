@@ -9,8 +9,11 @@ namespace
 	const float MAX_OMEGA = 2.0f;
 
 	const float SMALL_RADIUS_MAX = 40.0f;
-	const float MEDIUM_RADIUS_MAX = 60.0f;
-	const float LARG_RADIUS_MAX = 80.0f;
+	const float SMALL_RADIUS_MIN = 20.0f;
+	const float MEDIUM_RADIUS_MAX = 80.0f;
+	const float MEDIUM_RADIUS_MIN = 60.0f;
+	const float LARG_RADIUS_MAX = 120.0f;
+	const float LARG_RADIUS_MIN = 100.0f;
 }
 
 Enemy::Enemy(int segment)
@@ -126,13 +129,13 @@ float Enemy::RandomRadius(Size size)
 	switch (size)
 	{
 	case Size::SMALL:
-		return (float)(GetRand(SMALL_RADIUS_MAX - MIN_RADIUS) + MIN_RADIUS);
+		return (float)(GetRand(SMALL_RADIUS_MAX - SMALL_RADIUS_MIN) + SMALL_RADIUS_MIN);
 		break;
 	case Size::MEDIUM:
-		return (float)(GetRand(MEDIUM_RADIUS_MAX - SMALL_RADIUS_MAX) + SMALL_RADIUS_MAX);
+		return (float)(GetRand(MEDIUM_RADIUS_MAX - MEDIUM_RADIUS_MIN) + MEDIUM_RADIUS_MIN);
 		break;
 	case Size::LARGE:
-		return (float)(GetRand(LARG_RADIUS_MAX - MEDIUM_RADIUS_MAX) + MEDIUM_RADIUS_MAX);
+		return (float)(GetRand(LARG_RADIUS_MAX - LARG_RADIUS_MIN) + LARG_RADIUS_MIN);
 		break;
 	default:
 		return 1.0f;

@@ -63,6 +63,7 @@ namespace
 
 Stage::Stage()
 {
+	Init();
 }
 
 Stage::~Stage()
@@ -88,11 +89,12 @@ void Stage::Init()
 
 void Stage::TitleUpdate()
 {
-	Init();
 	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
+		Init();
 		stageState = 1;
 	}
+	counter++;
 }
 
 void Stage::PlayUpdate()
@@ -114,7 +116,7 @@ void Stage::PlayUpdate()
 	{
 		if (Input::IsKeepKeyDown(KEY_INPUT_SPACE))
 		{
-			for (int i = 0;i < 5;i++)
+			for (int i = 0;i < 2;i++)
 			{
 				ShootBullet();
 			}
@@ -136,15 +138,25 @@ void Stage::GameOverUpadate()
 	{
 		stageState = 0;
 	}
+	counter++;
 }
 
 void Stage::TitleDraw()
 {
 	int fontsize = GetFontSize();
 	SetFontSize(80);
-	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "ASTROIDS", COLOR_WHIGHT);
+	DrawString(WIN_WIDTH / 3 + 5, WIN_HEIGHT / 4 + 2, "ASTROIDS", GetColor(80, 80, 80));
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "A", GetColor(255,0,0));
+	DrawString(WIN_WIDTH / 3 + 41, WIN_HEIGHT / 4, "STROIDS", COLOR_WHIGHT);
+	DrawBox(WIN_WIDTH / 3 - 5, WIN_HEIGHT / 4 + 68, WIN_WIDTH, WIN_HEIGHT / 4 + 80, GetColor(255, 0, 0), true);
+	DrawBox(WIN_WIDTH / 3 - 5, WIN_HEIGHT / 4 + 80, WIN_WIDTH, WIN_HEIGHT / 4 + 82, GetColor(80, 80, 80), true);
 	SetFontSize(20);
-	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", COLOR_WHIGHT);
+	int PressColor = GetColor(255, 255, 255);
+	if (counter % 40 < 20)
+	{
+		PressColor = GetColor(255, 0, 0);
+	}
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", PressColor);
 	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 150, "　　　 　 ／ ⌒ヽ\n⊂二二二（ ＾ω＾）二⊃\n         | 　　 / 　　 　ﾌﾞｰﾝ\n        （　ヽノ\n         ﾉ > ノ\n   三　　レﾚ\n", COLOR_WHIGHT);
 	SetFontSize(fontsize);
 }
@@ -164,10 +176,24 @@ void Stage::GameOverDraw()
 {
 	int fontsize = GetFontSize();
 	SetFontSize(80);
-	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "GAMU_OVER", COLOR_WHIGHT);
+	
+	DrawString(WIN_WIDTH / 3 + sin(counter/2) * 10, WIN_HEIGHT / 4 + cos(counter/2) * 10, "GAMU_OVER", GetColor(255,100,100));
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "GAMU_OVER", GetColor(255,0,0));
 	SetFontSize(20);
-	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", COLOR_WHIGHT);
-	DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 4 + 150, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　　♪＼(^o^)　♪\n　　   　　　　 ＿  ) 　> ＿ ｷｭｯｷｭ♪\n　    　　　　／.◎。／◎｡／|\n　 ＼(^o^)／.|￣￣￣￣￣|　 | 　＼(^o^)／\n 　  )　 )  .|　　　　　|／　　　ノ　ノ\n(((  >￣ > )))　＼(^o^)／　 ((　<￣<　)))\n   　　　　　 　 　)　 )\n　　　　　　((( 　 >￣ > ))))\n", COLOR_WHIGHT);
+	int PressColor = GetColor(255, 255, 255);
+	if (counter % 40 < 20)
+	{
+		PressColor = GetColor(255, 0, 0);
+	}
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", PressColor);
+	if (counter % 40 < 20)
+	{
+		DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 4 + 150, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　　♪＼(^o^)　♪\n　　   　　　　 ＿  ) 　> ＿ ｷｭｯｷｭ♪\n　    　　　　／.◎。／◎｡／|\n　 ＼(^o^)／.|￣￣￣￣￣|　 | 　＼(^o^)／\n 　  )　 )  .|　　　　　|／　　　ノ　ノ\n(((  >￣ > )))　＼(^o^)／　 ((　<￣<　)))\n   　　　　　 　 　)　 )\n　　　　　　 (((　 >￣ > ))))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+	}
+	else
+	{
+		DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 4 + 150, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　♪   (^o^)／　♪\n　　   　　　　 ＿ < 　( ＿ ｷｭｷｭｯ♪\n　    　　　　／.◎。／◎｡／|\n　＼(^o^ )／.|￣￣￣￣￣|　 | 　＼( ^o^)／\n 　 (　 (   .|　　　　　|／　　　  ) 　)\n((( <￣ < )))　＼(^o^)／　     ((　>￣>　)))\n   　　　　　 　 (　 (\n　　　　　　(((  <￣ < ))))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+	}
 	SetFontSize(fontsize);
 }
 
@@ -349,60 +375,56 @@ void Stage::ObjectHit()
 	else
 	{
 		GamuOverCounter = 0;
-	}
-	
-	for (int i = 0;i < enemys.size();i++)
-	{
-		//enemys[i]->Update();
-		Vector2D Epos = enemys[i]->GetPos();
-		float Eradiuse = enemys[i]->GetRadius();
-		if (!enemys[i]->IsAlive())
+		for (int i = 0;i < enemys.size();i++)
 		{
-			continue;
-		}
-		if (!bullet.empty())
-		{
-			for (auto& bobj : bullet)
+			//enemys[i]->Update();
+			Vector2D Epos = enemys[i]->GetPos();
+			float Eradiuse = enemys[i]->GetRadius();
+			if (!enemys[i]->IsAlive())
 			{
-				Vector2D Bpos = bobj->GetPos();
-				float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
-				if (Dist < Eradiuse)
+				continue;
+			}
+			if (!bullet.empty())
+			{
+				for (auto& bobj : bullet)
 				{
-					score_ += UpScoreHit;
-					Enemy::Size size = enemys[i]->CheckSize();
-					Vector2D Evel = enemys[i]->GetVel();
-					enemys[i]->Kill();
-					bobj->Kill();
-					if (size == Enemy::Size::SMALL)
+					Vector2D Bpos = bobj->GetPos();
+					float Dist = Math2D::Length(Math2D::Sub(Epos, Bpos));
+					if (Dist < Eradiuse)
 					{
-						score_ += UpScoreKILL;
-						ExplosionEffect* eddect = new ExplosionEffect(Epos);
-						//effects.push_back(eddect);
-						AddObject(eddect, Bace::ClassName::EFFECT);
-					}
-					else if (size == Enemy::Size::MEDIUM)
-					{
-						for (int i = 0;i < GetRand(3) + 2;i++)
+						score_ += UpScoreHit;
+						Enemy::Size size = enemys[i]->CheckSize();
+						Vector2D Evel = enemys[i]->GetVel();
+						enemys[i]->Kill();
+						bobj->Kill();
+						if (size == Enemy::Size::SMALL)
 						{
-							Enemy* e = new Enemy(Epos, Evel, Enemy::Size::SMALL, 8);
-							//enemys.push_back(e);
-							AddObject(e, Bace::ClassName::ENEMY);
+							score_ += UpScoreKILL;
+							ExplosionEffect* eddect = new ExplosionEffect(Epos);
+							//effects.push_back(eddect);
+							AddObject(eddect, Bace::ClassName::EFFECT);
 						}
-					}
-					else if (size == Enemy::Size::LARGE)
-					{
-						for (int i = 0;i < GetRand(3) + 2;i++)
+						else if (size == Enemy::Size::MEDIUM)
 						{
-							Enemy* e = new Enemy(Epos, Evel, Enemy::Size::MEDIUM, 8);
-							//enemys.push_back(e);
-							AddObject(e, Bace::ClassName::ENEMY);
+							for (int i = 0;i < GetRand(3) + 2;i++)
+							{
+								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::SMALL, 8);
+								//enemys.push_back(e);
+								AddObject(e, Bace::ClassName::ENEMY);
+							}
+						}
+						else if (size == Enemy::Size::LARGE)
+						{
+							for (int i = 0;i < GetRand(3) + 2;i++)
+							{
+								Enemy* e = new Enemy(Epos, Evel, Enemy::Size::MEDIUM, 8);
+								//enemys.push_back(e);
+								AddObject(e, Bace::ClassName::ENEMY);
+							}
 						}
 					}
 				}
 			}
-		}
-		if (player != nullptr)
-		{
 			if (omegaDrast == true)
 			{
 				player->SetCharaColor(GetColor(255, 0, 0));
@@ -427,9 +449,7 @@ void Stage::ObjectHit()
 				AddObject(eddect, Bace::ClassName::EFFECT);
 			}
 		}
-
 	}
-
 }
 
 void Stage::Comand()
