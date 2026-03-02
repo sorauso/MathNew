@@ -26,9 +26,12 @@ namespace
 
 	unsigned int stageState;
 	unsigned int counter;
+	unsigned int Score_Time_counter;
+	unsigned int Time_Exit_counter;
 	unsigned int GamuOverCounter;
 	unsigned int ComandFlerm;
 	unsigned long long score_;
+	unsigned long long Max_score;
 	float Timer_;
 	bool omegaDrast;
 	unsigned int comandCounter;
@@ -77,6 +80,8 @@ void Stage::Init()
 	GamuOverCounter = 0;
 	stageState = 0;
 	counter = 1;
+	Score_Time_counter = 0;
+	Time_Exit_counter = 0;
 	ComandFlerm = 0;
 	score_ = 100;
 	Timer_ = 0.0f;
@@ -129,6 +134,10 @@ void Stage::PlayUpdate()
 		Enemy* e = new Enemy(pos, vel, Enemy::Size::LARGE, 8);
 		AddObject(e, Bace::ClassName::ENEMY);
 	}
+	if (score_ > Max_score)
+	{
+		Max_score = score_;
+	}
 	counter++;
 }
 
@@ -137,6 +146,7 @@ void Stage::GameOverUpadate()
 	if (Input::IsKeyDown(KEY_INPUT_SPACE))
 	{
 		stageState = 0;
+		counter = 0;
 	}
 	counter++;
 }
@@ -148,8 +158,10 @@ void Stage::TitleDraw()
 	DrawString(WIN_WIDTH / 3 + 5, WIN_HEIGHT / 4 + 2, "ASTROIDS", GetColor(80, 80, 80));
 	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "A", GetColor(255,0,0));
 	DrawString(WIN_WIDTH / 3 + 41, WIN_HEIGHT / 4, "STROIDS", COLOR_WHIGHT);
-	DrawBox(WIN_WIDTH / 3 - 5, WIN_HEIGHT / 4 + 68, WIN_WIDTH, WIN_HEIGHT / 4 + 80, GetColor(255, 0, 0), true);
-	DrawBox(WIN_WIDTH / 3 - 5, WIN_HEIGHT / 4 + 80, WIN_WIDTH, WIN_HEIGHT / 4 + 82, GetColor(80, 80, 80), true);
+	DrawBox(WIN_WIDTH / 3 - 5, WIN_HEIGHT / 4 + 68, WIN_WIDTH/3+counter, WIN_HEIGHT / 4 + 80, GetColor(255, 0, 0), true);
+	DrawBox(WIN_WIDTH / 3 - 5, WIN_HEIGHT / 4 + 80, WIN_WIDTH/3+counter, WIN_HEIGHT / 4 + 82, GetColor(80, 80, 80), true);
+	DrawBox(0 , WIN_HEIGHT / 4 + 68, -WIN_WIDTH + counter, WIN_HEIGHT / 4 + 80, GetColor(255, 0, 0), true);
+	DrawBox(0 , WIN_HEIGHT / 4 + 80, -WIN_WIDTH + counter, WIN_HEIGHT / 4 + 82, GetColor(80, 80, 80), true);
 	SetFontSize(20);
 	int PressColor = GetColor(255, 255, 255);
 	if (counter % 40 < 20)
@@ -166,9 +178,10 @@ void Stage::PlayDraw()
 	DrawAllObject();
 	int fontsize = GetFontSize();
 	SetFontSize(30);
-	DrawFormatString(0, 0, COLOR_WHIGHT, "SCORE : %0lld", score_);
+	DrawFormatString(0, 0, COLOR_WHIGHT, "SHIELD : %0lld", score_);
 	SetFontSize(20);
-	DrawFormatString(0, 40, COLOR_WHIGHT, "TIME : %.0lf", Timer_);
+	DrawFormatString(0, 40, COLOR_WHIGHT, "score : %0lld", Max_score);
+	DrawFormatString(0, 70, COLOR_WHIGHT, "time : %.0lf", Timer_);
 	SetFontSize(fontsize);
 }
 
@@ -180,19 +193,67 @@ void Stage::GameOverDraw()
 	DrawString(WIN_WIDTH / 3 + sin(counter/2) * 10, WIN_HEIGHT / 4 + cos(counter/2) * 10, "GAMU_OVER", GetColor(255,100,100));
 	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4, "GAMU_OVER", GetColor(255,0,0));
 	SetFontSize(20);
+	int counterFirst = (WIN_WIDTH + 100)-(WIN_WIDTH / 2 - 50);
+	if (counter < counterFirst)
+	{
+		DrawFormatString(WIN_WIDTH / 3, WIN_HEIGHT / 3 + 50, COLOR_WHIGHT, "score : %0lld", Max_score);
+		DrawFormatString(WIN_WIDTH+20-counter+100, WIN_HEIGHT / 3 + 50, COLOR_WHIGHT, "time : %0lld", (int)Timer_);
+	}
+	else if((Max_score + Score_Time_counter < Max_score + (int)Timer_))
+	{
+		Score_Time_counter++;
+		DrawFormatString(WIN_WIDTH / 3, WIN_HEIGHT / 3 + 50, COLOR_WHIGHT, "score : %0lld", Max_score + Score_Time_counter);
+		DrawFormatString(WIN_WIDTH / 2 - 30, WIN_HEIGHT / 3 + 50, COLOR_WHIGHT, "time : %0lld", (int)(Timer_) - Score_Time_counter);
+	}
+	else
+	{
+		Time_Exit_counter++;
+		DrawFormatString(WIN_WIDTH / 3, WIN_HEIGHT / 3 + 50, COLOR_WHIGHT, "score : %0lld", Max_score + (int)Timer_);
+		DrawFormatString(WIN_WIDTH / 2 - 30 + Time_Exit_counter, WIN_HEIGHT / 3 + 50, COLOR_WHIGHT, "time : 0");
+	}
+
+
+
 	int PressColor = GetColor(255, 255, 255);
 	if (counter % 40 < 20)
 	{
 		PressColor = GetColor(255, 0, 0);
 	}
-	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 4 + 100, "PRESS SPACE KEY", PressColor);
+	DrawString(WIN_WIDTH / 3, WIN_HEIGHT / 2 + 30, "PRESS SPACE KEY", PressColor);
 	if (counter % 40 < 20)
 	{
-		DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 4 + 150, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　　♪＼(^o^)　♪\n　　   　　　　 ＿  ) 　> ＿ ｷｭｯｷｭ♪\n　    　　　　／.◎。／◎｡／|\n　 ＼(^o^)／.|￣￣￣￣￣|　 | 　＼(^o^)／\n 　  )　 )  .|　　　　　|／　　　ノ　ノ\n(((  >￣ > )))　＼(^o^)／　 ((　<￣<　)))\n   　　　　　 　 　)　 )\n　　　　　　 (((　 >￣ > ))))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 2 + 80, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　　♪＼(^o^)　♪\n　　   　　　　 ＿  ) 　> ＿ ｷｭｯｷｭ♪\n　    　　　　／.◎。／◎｡／|\n　 ＼(^o^)／.|￣￣￣￣￣|　 | 　＼(^o^)／\n 　  )　 )  .|　　　　　|／　　　ノ　ノ\n(((  >￣ > )))　＼(^o^)／　 ((　<￣<　)))\n   　　　　　 　 　)　 )\n　　　　　　 (((　 >￣ > ))))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		if (counter < counterFirst)
+		{
+			DrawString(WIN_WIDTH - counter+100, WIN_HEIGHT / 3 + 70, "  ＼( ^o^)／\n 　 )　  )  \n (((> ￣ > )))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		}
+		else if ((Max_score + Score_Time_counter < Max_score + (int)Timer_))
+		{
+			DrawString(WIN_WIDTH / 2 - 50, WIN_HEIGHT / 3 + 70, "  ＼( ^o^)／\n 　 )　  )  \n (((> ￣ > )))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+
+		}
+		else
+		{
+			DrawString(WIN_WIDTH / 2 - 50 + Time_Exit_counter, WIN_HEIGHT / 3 + 70, "  ＼( ^o^)／\n 　 )　  )  \n (((> ￣ > )))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+
+		}
 	}
 	else
 	{
-		DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 4 + 150, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　♪   (^o^)／　♪\n　　   　　　　 ＿ < 　( ＿ ｷｭｷｭｯ♪\n　    　　　　／.◎。／◎｡／|\n　＼(^o^ )／.|￣￣￣￣￣|　 | 　＼( ^o^)／\n 　 (　 (   .|　　　　　|／　　　  ) 　)\n((( <￣ < )))　＼(^o^)／　     ((　>￣>　)))\n   　　　　　 　 (　 (\n　　　　　　(((  <￣ < ))))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		DrawString(WIN_WIDTH / 3 - 50, WIN_HEIGHT / 2 + 80, "　　　　ｵ､ｵ、ｵﾜﾀｰｵﾜｵﾜｵﾜﾀｰ♪\n　　　　＼　　　　ｵｵｵｵﾜﾀｰｵﾜｵｵﾜｵﾜﾀ／\n　  　　　　　♪   (^o^)／　♪\n　　   　　　　 ＿ < 　( ＿ ｷｭｷｭｯ♪\n　    　　　　／.◎。／◎｡／|\n　＼(^o^ )／.|￣￣￣￣￣|　 | 　＼( ^o^)／\n 　 (　 (   .|　　　　　|／　　　  ) 　)\n((( <￣ < )))　＼(^o^)／　     ((　>￣>　)))\n   　　　　　 　 (　 (\n　　　　　　(((  <￣ < ))))\n", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		if (counter < counterFirst)
+		{
+			DrawString(WIN_WIDTH - counter+100, WIN_HEIGHT / 3 + 70, " ＼(^o^ )／\n 　(　  ( \n(((< ￣ < )))", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		}
+		else if ((Max_score + Score_Time_counter < Max_score + (int)Timer_))
+		{
+			DrawString(WIN_WIDTH / 2 - 50, WIN_HEIGHT / 3 + 70, " ＼(^o^ )／\n 　(　  ( \n(((< ￣ < )))", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+
+		}
+		else
+		{
+			DrawString(WIN_WIDTH / 2 - 50 + Time_Exit_counter, WIN_HEIGHT / 3 + 70, " ＼(^o^ )／\n 　(　  ( \n(((< ￣ < )))", GetColor(GetRand(100) + 155, GetRand(100) + 155, GetRand(100) + 155));
+		}
 	}
 	SetFontSize(fontsize);
 }
@@ -370,6 +431,7 @@ void Stage::ObjectHit()
 		if (GamuOverCounter > 200)
 		{
 			stageState = 2;
+			counter = 0;
 		}
 	}
 	else
@@ -393,6 +455,7 @@ void Stage::ObjectHit()
 					if (Dist < Eradiuse)
 					{
 						score_ += UpScoreHit;
+						Max_score += UpScoreHit;
 						Enemy::Size size = enemys[i]->CheckSize();
 						Vector2D Evel = enemys[i]->GetVel();
 						enemys[i]->Kill();
@@ -400,6 +463,7 @@ void Stage::ObjectHit()
 						if (size == Enemy::Size::SMALL)
 						{
 							score_ += UpScoreKILL;
+							Max_score += UpScoreKILL;
 							ExplosionEffect* eddect = new ExplosionEffect(Epos);
 							//effects.push_back(eddect);
 							AddObject(eddect, Bace::ClassName::EFFECT);
@@ -432,10 +496,13 @@ void Stage::ObjectHit()
 			Vector2D Ppos = player->GetPos();
 			if (score_ <= 0)
 			{
-				ExplosionEffect* eddect = new ExplosionEffect(Ppos, 20);
-				eddect->SetColor(255, 0, 0);
-				//effects.push_back(eddect);
-				AddObject(eddect, Bace::ClassName::EFFECT);
+				for (int i = 0;i < 10;i++)
+				{
+					ExplosionEffect* eddect = new ExplosionEffect(Ppos, 20);
+					eddect->SetColor(255, 0, 0);
+					//effects.push_back(eddect);
+					AddObject(eddect, Bace::ClassName::EFFECT);
+				}
 				player->Kill();
 			}
 			float Dist = Math2D::Length(Math2D::Sub(Epos, Ppos));

@@ -11,6 +11,7 @@ private:
     float radius_;
     float CridRadius_;
     bool isAlive_;
+    int counter;
 public:
     Player();
     Player(Vector2D pos, Vector2D vel, int color,Vector2D dir,float omega ,float radius);
