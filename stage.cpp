@@ -515,6 +515,26 @@ void Stage::ObjectHit()
 				//effects.push_back(eddect);
 				AddObject(eddect, Bace::ClassName::EFFECT);
 			}
+			for (int j = 0;j < enemys.size();j++)
+			{
+				//enemys[i]->Update();
+				if (enemys[j] == enemys[i])
+				{
+					continue;
+				}
+				Vector2D E2pos = enemys[j]->GetPos();
+				float E2radiuse = enemys[j]->GetRadius();
+				if (!enemys[j]->IsAlive())
+				{
+					continue;
+				}
+				float Dist = Math2D::Length(Math2D::Sub(Epos, E2pos));
+				float Radius = Eradiuse + E2radiuse;
+				if (Dist < Radius)
+				{
+					
+				}
+			}
 		}
 	}
 }

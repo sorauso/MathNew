@@ -33,6 +33,7 @@ Enemy::Enemy(int segment)
 	vertex_.resize(segment_);
 	angle_ = 0.0f;
 	omega_ = ((float)GetRand(20) + 1)/10;
+	counter = 0;
 	MakeShape();
 }
 
@@ -50,6 +51,7 @@ Enemy::Enemy(Size size, int segment)
 	vertex_.resize(segment_);
 	angle_ = 0.0f;
 	omega_ = ((float)GetRand(20) + 1) / 10;
+	counter = 0;
 	MakeShape();
 }
 
@@ -66,6 +68,7 @@ Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
 	vertex_.resize(segment_);
 	angle_ = 0.0f;
 	omega_ = ((float)GetRand(20) + 1) / 10;
+	counter = 0;
 	MakeShape();
 }
 
@@ -106,6 +109,7 @@ void Enemy::Update()
 	if (pos_.y < 0) { pos_.y = WIN_HEIGHT; }
 	if (pos_.y > WIN_HEIGHT) { pos_.y = 0; }
 	angle_ = angle_ + omega_ * dt;
+	counter += dt;
 }
 
 Enemy::Size Enemy::CheckSize() const

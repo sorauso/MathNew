@@ -25,7 +25,7 @@ public:
     void Update() override;
     bool IsAlive() { return isAlive_; }
     float GetRadius() const{ return radius_; }
-    void Kill() { isAlive_ = false; }
+    void Kill() {isAlive_ = false;}
 
     Size GetSize() { return size_; }
     Size CheckSize() const;
@@ -39,6 +39,7 @@ private:
     float angle_;
     float omega_;
     bool isAlive_;
+    float counter;
     std::vector<Vector2D>vertex_;
 
     Size size_;
