@@ -9,6 +9,7 @@ namespace
 	
 	const float DAMP = 0.995f;
 	const float ACC = 100.0f;
+	const float AFTERBURNER_POSITION = 1.2f;
 }
 
 Player::Player()
@@ -57,7 +58,7 @@ void Player::Draw()
 		if (counter % 2 == (rand()%2))
 		{
 			Vector2D pos = pos_;
-			pos = Math2D::Mul(Math2D::Sub(pos, vertex_[0]), 1.2f);
+			pos = Math2D::Mul(Math2D::Sub(pos, vertex_[0]), AFTERBURNER_POSITION);
 			pos = Math2D::Add(pos, pos_);
 			pos = Math2D::World2Screen(pos);
 			DrawCircle(pos.x, pos.y, 2, 0xffffff, true);
